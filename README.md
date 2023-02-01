@@ -1,3 +1,4 @@
 # go-restapi-gin
 
-CRUD API Golang with GIN framework and GORM ORM and MVC Concept
+CRUD and Authentication API Golang with GIN framework and GORM ORM and MVC Concept and JWT
+

@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-restapi-gin/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -47,8 +49,13 @@ func Create(c *gin.Context){
 	var product models.Product
 
 	if err := c.ShouldBindJSON(&product); err != nil{
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors){
+			errorMessage := fmt.Sprintf("Error in field %s condition %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
 		})
 		return
 	}
@@ -65,8 +72,13 @@ func Update(c *gin.Context){
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&product); err != nil{
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+		errorMessages := []string{}
+		for _, e := range err.(validator.ValidationErrors){
+			errorMessage := fmt.Sprintf("Error in field %s condition %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
 		})
 		return
 	}
