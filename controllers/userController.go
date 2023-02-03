@@ -110,3 +110,41 @@ func Profile(c *gin.Context){
 		"email": email,
 	})
 }
+
+func ChangePass(c *gin.Context){
+	var body struct{
+		Password string 
+	}
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	var account models.User
+	user, _ := c.Get("user")
+
+	email := user.(models.User).Email
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to hash password",
+		})
+		return
+	}
+
+	if models.DB.Model(&account).Where("email = ?", email).UpdateColumn("password", hash).RowsAffected == 0{
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"message": "Data Tidak Ditemukkan", 
+		})
+		return
+	}
+	
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Password Berhasil Di Ganti",
+	})
+}

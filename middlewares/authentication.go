@@ -17,12 +17,11 @@ func CheckCredetial(c *gin.Context){
 	const BEARER_SCHEMA = "Bearer "
 	authHeader := c.GetHeader("Authorization")
 	if len(authHeader) == 0 {
-		fmt.Println("test")
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"message": "Unauthorized",
 		})
 	}
-	
+
 	tokenString := authHeader[len(BEARER_SCHEMA):]
 
 	// Decode/validate it
